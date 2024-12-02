@@ -1,0 +1,146 @@
+local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+function jpSmAjEajGNRjlcBR(data) m=string.sub(data, 0, 55) data=data:gsub(m,'')
+
+data = string.gsub(data, '[^'..b..'=]', '') return (data:gsub('.', function(x) if (x == '=') then return '' end local r,f='',(b:find(x)-1) for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end return r; end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x) if (#x ~= 8) then return '' end local c=0 for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end return string.char(c) end)) end
+
+
+ 
+
+
+local Players = game:GetService(jpSmAjEajGNRjlcBR('egsilMaBtGHpOCQmCEJzUGHrKJoVtQXEwMvSXeEUEfHjxHRPScNaMwYUGxheWVycw=='))
+local UserInputService = game:GetService(jpSmAjEajGNRjlcBR('rZcNaqVTSrTawojMpstFzpozhqQovMHQNANGXVsqbOeXyegdEazQhmCVXNlcklucHV0U2VydmljZQ=='))
+local RunService = game:GetService(jpSmAjEajGNRjlcBR('xeDAWbOILnfRkWMsojjIXCmhndEQdBIZmTMSknRAoTVRUZvouXVGCRtUnVuU2VydmljZQ=='))
+local TweenService = game:GetService(jpSmAjEajGNRjlcBR('sTtkZNCxLRBtlOqeNnBjBLjtwQRwngeQqoVRMyITzJKQusxtkYoaqjjVHdlZW5TZXJ2aWNl'))
+local CoreGui = game:GetService(jpSmAjEajGNRjlcBR('OBmNJhWIUadTcaJsWMXsBzLqLMmUdinTFWTpJdFzBoSOQXWavQoBbwGQ29yZUd1aQ=='))
+
+local player = Players.LocalPlayer
+local screenGui = Instance.new(jpSmAjEajGNRjlcBR('cRnarIhUsnLBCzPLCVhlsgNJQPydOhfWISmWdVxpWzhRcZkXoCDOWiYU2NyZWVuR3Vp'))
+screenGui.Parent = CoreGui
+screenGui.Name = jpSmAjEajGNRjlcBR('zTYYxBMKjXAOkTOKhQnuqSVSObkwvfKSTQrtdPYrWkRUIZlAxswMOiiU3VwZXJTcGluTWVudQ==')
+screenGui.ResetOnSpawn = false
+
+local isSpinning = false
+local isDragging = false
+local dragInput
+local dragStart
+local startPos
+
+-- Tạo khung menu chính
+local menuFrame = Instance.new(jpSmAjEajGNRjlcBR('FoNrMVLIsxZfXAdvWrGAteEzgtcLkTtEkOLBzmhucOvJxCfFZcWnJfGRnJhbWU='))
+menuFrame.Size = UDim2.new(0, 250, 0, 150)
+menuFrame.Position = UDim2.new(0.7, 0, 0.7, 0)
+menuFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+menuFrame.BackgroundTransparency = 0.2
+menuFrame.BorderSizePixel = 0
+menuFrame.Parent = screenGui
+
+-- Tiêu đề menu
+local titleLabel = Instance.new(jpSmAjEajGNRjlcBR('wImfdvKYHCaKJOBZkFICsbffgmmJTXijXBbcouFhssppEHzWNWOZWLqVGV4dExhYmVs'))
+titleLabel.Size = UDim2.new(1, 0, 0, 30)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.Text = jpSmAjEajGNRjlcBR('psPAROEPSplXgBtZUopNIzRYMtqaHubRbFUugfZPfKOLwLfqPOgRGfnU3VwZXIgU3BpbiBNZW51')
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextColor3 = Color3.new(1, 1, 1)
+titleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+titleLabel.Parent = menuFrame
+
+-- Nút thu gọn
+local collapseButton = Instance.new(jpSmAjEajGNRjlcBR('fcmcYKPefhMKkEARqZMVAvHlJZUUGhzKXpvTKUsqEfANoKwOAnkaYTLVGV4dEJ1dHRvbg=='))
+collapseButton.Size = UDim2.new(0, 30, 0, 30)
+collapseButton.Position = UDim2.new(1, -30, 0, 0)
+collapseButton.Text = jpSmAjEajGNRjlcBR('WDwvNdLxpFCPiMAQPjYJXFPxLBGGCEZpekUCFGfQCrRnWXTAObdePrGLQ==')
+collapseButton.TextColor3 = Color3.new(1, 1, 1)
+collapseButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+collapseButton.Parent = menuFrame
+
+-- Nút Circular On/Off
+local circularButton = Instance.new(jpSmAjEajGNRjlcBR('qTPfVGWeIprQOPivWSjNKsSncyKKPykdkFlDRGagVSbGItkPRllyuCSVGV4dEJ1dHRvbg=='))
+circularButton.Size = UDim2.new(0, 200, 0, 50)
+circularButton.Position = UDim2.new(0.1, 0, 0.3, 0)
+circularButton.Text = jpSmAjEajGNRjlcBR('UTHTRmEmGVdyeqRZuXqseMAPpAOdBboZHYJnHiYLlHcVvbZccWBnaFMQ2lyY3VsYXI6IE9GRg==')
+circularButton.Font = Enum.Font.GothamBold
+circularButton.TextColor3 = Color3.new(1, 1, 1)
+circularButton.BackgroundColor3 = Color3.fromRGB(100, 50, 50)
+circularButton.Parent = menuFrame
+
+-- Hàm di chuyển menu
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    menuFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+titleLabel.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        isDragging = true
+        dragStart = input.Position
+        startPos = menuFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                isDragging = false
+            end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if isDragging then
+            updateDrag(input)
+        end
+    end
+end)
+
+-- Nút thu gọn
+local isCollapsed = false
+collapseButton.MouseButton1Click:Connect(function()
+    isCollapsed = not isCollapsed
+    if isCollapsed then
+        TweenService:Create(menuFrame, TweenInfo.new(0.2), {Size = UDim2.new(0, 250, 0, 50)}):Play()
+        collapseButton.Text = jpSmAjEajGNRjlcBR('jlxboUvPsBDWIOEOHyCAAHyMXFKKdjFIIxKgFzIXDpUTNUTiHwQKbOaKw==')
+    else
+        TweenService:Create(menuFrame, TweenInfo.new(0.2), {Size = UDim2.new(0, 250, 0, 150)}):Play()
+        collapseButton.Text = jpSmAjEajGNRjlcBR('phXTmYfNHSZelzasufrQBYRoryxdgqLEZmTnMjoejMSwzUeCJQplzkhLQ==')
+    end
+end)
+
+-- Hàm xoay nhân vật
+local function spinRotation()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild(jpSmAjEajGNRjlcBR('PBOkmurbZnhBbSNHJLKWoxTghQkVSCbMqinWDVrUOLzclONKADayOwuSHVtYW5vaWRSb290UGFydA=='))
+    local humanoid = character:WaitForChild(jpSmAjEajGNRjlcBR('OeksHKjRjJVvoyHcmgndeKyTMfOhmopwRFGCzpLIVplxNpdGaNLAJMWSHVtYW5vaWQ='))
+
+    while isSpinning do
+        humanoidRootPart.CFrame *= CFrame.Angles(0, math.rad(250), 0)
+        humanoid.WalkSpeed = 16  -- Giữ nguyên tốc độ di chuyển
+        RunService.Heartbeat:Wait()
+    end
+end
+
+-- Nút Circular
+circularButton.MouseButton1Click:Connect(function()
+    isSpinning = not isSpinning
+    if isSpinning then
+        circularButton.Text = jpSmAjEajGNRjlcBR('JnUvRHTQffCcdGigqPPOGtmyNdmZZVLqnVNLiyGbvVkRDneEveBXwNoQ2lyY3VsYXI6IE9O')
+        circularButton.BackgroundColor3 = Color3.fromRGB(50, 100, 50)
+        task.spawn(spinRotation)
+    else
+        circularButton.Text = jpSmAjEajGNRjlcBR('lDqDVPvHKNDMceYDOaOvSyUYdTiZjHYHJKiiUbmkXUrUPjLoemQMMYfQ2lyY3VsYXI6IE9GRg==')
+        circularButton.BackgroundColor3 = Color3.fromRGB(100, 50, 50)
+    end
+end)
+
+-- Điều khiển cho PC
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.E and not gameProcessed then
+        isSpinning = not isSpinning
+        if isSpinning then
+            circularButton.Text = jpSmAjEajGNRjlcBR('mmKkllgbptlPAZabVEIIgFQXsFtsGFsOBmtIWEbSjwtwwXXSFnNLkwJQ2lyY3VsYXI6IE9O')
+            circularButton.BackgroundColor3 = Color3.fromRGB(50, 100, 50)
+            task.spawn(spinRotation)
+        else
+            circularButton.Text = jpSmAjEajGNRjlcBR('eJpZCLAliSRMFRLdxPbjDkwNzmiGuwyiPhkstrFZnkGEUYTZjyEjfoIQ2lyY3VsYXI6IE9GRg==')
+            circularButton.BackgroundColor3 = Color3.fromRGB(100, 50, 50)
+        end
+    end
+end)    
